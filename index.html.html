@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Java & Spring Boot Ultimate Guide</title>
+    <style>
+        :root {
+            --primary-color: #0f172a; --primary-light: #334155; --accent-color: #4f46e5; --accent-hover: #4338ca;
+            --accent-light: #e0e7ff; --bg-color: #f8fafc; --card-bg: #ffffff; --text-color: #1e293b;
+            --secondary-text: #64748b; --border-radius: 12px;
+            --shadow-sm: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --border-color: #e2e8f0; --success-color: #10b981;
+            --warning-bg: #fffbeb; --warning-border: #fcd34d; --danger-bg: #fef2f2; --danger-border: #fca5a5;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-size: 18px; line-height: 1.6; padding-bottom: 80px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        header { background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: white; padding: 3rem 1rem 2rem; text-align: center; box-shadow: var(--shadow-md); margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+        header::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%); pointer-events: none; }
+        header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; font-weight: 800; letter-spacing: -0.03em; position: relative; z-index: 1; }
+        header p { font-size: 1.25rem; color: #cbd5e1; max-width: 600px; margin: 0 auto; position: relative; z-index: 1; }
+        .filter-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 0 auto 30px; padding: 15px 16px; max-width: 1000px; position: sticky; top: 0; z-index: 100; background: rgba(248, 250, 252, 0.95); backdrop-filter: blur(8px); box-shadow: 0 4px 6px -5px rgba(0,0,0,0.1); }
+        .filter-btn { background-color: white; border: 1px solid var(--border-color); color: var(--secondary-text); padding: 12px 24px; border-radius: 50px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s ease; box-shadow: var(--shadow-sm); flex: 1 1 auto; min-width: 140px; max-width: 200px; }
+        .filter-btn:hover { border-color: var(--accent-color); color: var(--accent-color); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .filter-btn.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); }
+        main { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+        .level-section { display: none; animation: fadeIn 0.4s ease-out; }
+        .level-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .section-header { margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 2px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+        .section-header h2 { color: var(--primary-color); font-size: 1.8rem; font-weight: 800; }
+        .focus-tag { background-color: var(--accent-light); color: var(--accent-color); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid #c7d2fe; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px; align-items: stretch; }
+        .card { background: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow-sm); padding: 1.5rem; border: 1px solid var(--border-color); display: flex; flex-direction: column; height: 100%; overflow: visible; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: #cbd5e1; }
+        .card h3 { color: var(--primary-color); font-size: 1.3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+        .scenario-box { background-color: var(--warning-bg); border-left: 4px solid var(--warning-border); padding: 1rem; border-radius: 0 8px 8px 0; margin-top: 0.5rem; color: #4b5563; font-size: 0.95rem; margin-bottom: 1rem; word-wrap: break-word; overflow-wrap: break-word; }
+        .scenario-box.danger { background-color: var(--danger-bg); border-left-color: var(--danger-border); color: #991b1b; }
+        .scenario-title { font-weight: 700; color: #92400e; display: block; margin-bottom: 6px; font-size: 1rem; }
+        .scenario-box.danger .scenario-title { color: #7f1d1d; }
+        .email-wrapper { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem; position: relative; overflow: hidden; }
+        .email-header { background: #f1f5f9; padding: 8px 12px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .email-subject { font-weight: 700; color: var(--primary-color); font-size: 0.9rem; }
+        .copy-btn { background: transparent; border: none; color: var(--accent-color); font-size: 0.8rem; font-weight: 700; cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
+        .copy-btn:hover { background: var(--accent-light); }
+        .email-body { font-size: 0.95rem; color: var(--secondary-text); padding: 12px; font-style: normal; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; }
+        .checklist-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 0.95rem; color: var(--text-color); }
+        .checklist-checkbox { appearance: none; min-width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 4px; margin-top: 2px; cursor: pointer; position: relative; transition: all 0.2s; }
+        .checklist-checkbox:checked { background-color: var(--success-color); border-color: var(--success-color); }
+        .checklist-checkbox:checked::after { content: '✔'; position: absolute; color: white; font-size: 14px; left: 3px; top: -1px; }
+        .checklist-checkbox:checked + span { text-decoration: line-through; color: #94a3b8; }
+        ul { list-style: none; margin-top: 5px; }
+        li { margin-bottom: 10px; padding-left: 22px; position: relative; font-size: 0.95rem; color: var(--text-color); word-wrap: break-word; overflow-wrap: break-word; }
+        li::before { content: "•"; color: var(--accent-color); font-weight: bold; position: absolute; left: 0; top: 1px; }
+        .code-tag { background-color: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; font-size: 0.85em; font-weight: 600; white-space: normal; word-break: break-all; display: inline-block; }
+        .acronym-list li { padding-left: 0; display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom: 6px; margin-bottom: 8px; flex-wrap: wrap; gap: 10px; }
+        .acronym-list li::before { content: none; }
+        .acronym-abbr { font-weight: 700; color: var(--primary-color); }
+        .acronym-full { font-size: 0.9rem; color: var(--secondary-text); text-align: right; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background-color: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; font-size: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2); opacity: 0; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); z-index: 1000; }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        footer { text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border-color); color: var(--secondary-text); font-size: 0.9rem; }
+        @media (max-width: 768px) { header h1 { font-size: 2rem; } .grid-container { grid-template-columns: 1fr; } .filter-container { justify-content: stretch; } .filter-btn { flex: 1 1 45%; min-width: 45%; font-size: 0.9rem; } }
+        @media (max-width: 480px) { .filter-btn { flex: 1 1 100%; min-width: 100%; font-size: 0.95rem; } .card { padding: 1.25rem; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Java & Spring Boot Guide</h1>
+        <p>Complete Career Path: Coding, Operations & Architecture</p>
+    </header>
+    <div class="filter-container">
+        <button class="filter-btn active" data-target="junior">0-2 Years (Junior)</button>
+        <button class="filter-btn" data-target="mid">2-5 Years (Mid)</button>
+        <button class="filter-btn" data-target="senior">5-8 Years (Senior)</button>
+        <button class="filter-btn" data-target="architect">8+ Years (Architect)</button>
+    </div>
+    <main>
+        <!-- JUNIOR CONTENT -->
+        <div id="junior" class="level-section active">
+            <div class="section-header">
+                <h2>Junior Level (0 - 2 Years)</h2>
+                <span class="focus-tag">Focus: Execution, Job Hunt & Survival</span>
+            </div>
+            <div class="grid-container">
+                <div class="card">
+                    <h3>📝 Resume & Job Hunt</h3>
+                    <ul>
+                        <li><strong>Action Verbs:</strong> Don't say "Did a project". Say "Implemented REST APIs", "Resolved database N+1 issues". Verbs show ownership.</li>
+                        <li><strong>Projects Matter:</strong> Since experience is low, highlight 2-3 solid GitHub projects (e.g., E-commerce backend, Blog API). Ensure they actually compile and run.</li>
+                        <li><strong>Tech Stack:</strong> Clearly list: Java 17, Spring Boot, PostgreSQL, Docker, Git. Don't list things you can't explain in an interview.</li>
+                        <li><strong>ATS Friendly:</strong> Don't use heavy graphics, tables, or weird fonts. Applicant Tracking Systems parse plain text. Standard templates win.</li>
+                        <li><strong>Links:</strong> Include LinkedIn, GitHub, and a live link if deployed (e.g., Render, Railway). A live link proves you can deploy.</li>
+                    </ul>
+                    <div class="scenario-box">
+                        <span class="scenario-title">Scenario: "I have no projects"</span>
+                        Build a "Task Management API" (Spring Boot + JWT + MySQL). Write unit tests. Deploy to Render/Railway for free. Put the live link on your resume.
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>🥷 Imposter Syndrome</h3>
+                    <p style="margin-bottom: 0.5rem; color: var(--secondary-text);">Feeling like you don't belong or everyone is smarter than you. Extremely common in tech.</p>
+                    <div class="scenario-box">
+                        <span class="scenario-title">Reality Check</span>
+                        You were hired because a team of professionals reviewed your skills and said "Yes". You are not a fraud. You are a junior; you are *expected* to not know things.
+                    </div>
+                    <ul>
+                        <li><strong>The "I don't know YET" rule:</strong> Change "I don't know this" to "I don't know this *yet*, but I will figure it out." It shifts your brain from fixed to growth mindset.</li>
+                        <li><strong>Don't compare:</strong> Don't compare your day 1 to a senior's year 5. Compare yourself to yourself 6 months ago.</li>
+                        <li><strong>Track wins:</strong> Keep a private "Brag Document". Write down every bug you fix and feature you ship. Read it when you feel low or before performance reviews.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>⏳ Time Management</h3>
+                    <ul>
+                        <li><strong>Pomodoro:</strong> 25 mins focus, 5 mins break. Stops you from burning out staring at a screen for 3 hours straight without moving.</li>
+                        <li><strong>Context Switching:</strong> It takes 15+ mins to regain deep focus after a Slack ping. Turn off notifications when doing deep logic work.</li>
+                        <li><strong>Calendar Blocking:</strong> Block 2 hours of "No Meeting" time daily. Treat it like a meeting with the CEO—unchangeable.</li>
+                        <li><strong>Eat the Frog:</strong> Do the hardest/most annoying task first thing in the morning when your willpower is highest.</li>
+                    </ul>
+                    <div class="scenario-box">
+                        <span class="scenario-title">Scenario: Manager interrupts constantly</span>
+                        Say: "I'm in the middle of debugging a complex flow. Can I get back to you in 45 mins?" Or update your Slack status to "Deep Work until 2 PM".
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>👋 Self-Introduction & First Impression</h3>
+                    <p style="margin-bottom: 0.5rem; color: var(--secondary-text);">Establishing yourself as eager, reliable, and coachable.</p>
+                    <div class="scenario-box">
+                        <span class="scenario-title">Scenario: Slack/Teams Intro on Day 1</span>
+                        "Hi everyone 👋 I'm [Your Name], joining as a Junior Backend Developer. I recently graduated from [University/Bootcamp] where I focused on Java. I'm super excited to dive into Spring Boot and learn from this team. Outside of work, I enjoy [Hobby]. Looking forward to working with you all!"
+                    </div>
+                    <div class="scenario-box">
+                        <span class="scenario-title">Scenario: Standup Intro</span>
+                        "Hi, I'm [Name]. I'm currently onboarding and setting up my local environment today. I'll be shadowing [Senior Name] this week to understand our ticket workflow."
+                    </div>
+                    <ul>
+                        <li><strong>Do's:</strong> Smile, remember names (write them down), ask about team norms.</li>
+                        <li><strong>Don'ts:</strong> Pretend to know things you don't, interrupt, complain about setup delays.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>⚡ CRUD Operations Deep Dive</h3>
+                    <ul>
+                        <li><strong>Create (POST):</strong> <span class="code-tag">@PostMapping</span>. Accept JSON body (DTO). Call <span class="code-tag">repository.save(entity)</span>. Return 201 Created (not 200 OK) with a Location header pointing to the new resource.</li>
+                        <li><strong>Read (GET):</strong> <span class="code-tag">@GetMapping("/{id}")</span>. Use <span class="code-tag">repository.findById(id)</span>. Handle <span class="code-tag">Optional</span> properly using <span class="code-tag">.orElseThrow()</span> to return a 404. Never return null to the frontend.</li>
+                        <li><strong>Update (PUT/PATCH):</strong> Fetch existing entity first. Update fields. Call <span class="code-tag">repository.save()</span>. (PUT replaces all fields; PATCH updates only provided fields).</li>
+                        <li><strong>Delete (DELETE):</strong> <span class="code-tag">@DeleteMapping("/{id}")</span>. Call <span class="code-tag">repository.deleteById(id)</span>. Return 204 No Content (no response body).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🎫 Jira Fundamentals</h3>
+                    <ul>
+                        <li><strong>Ticket Types:</strong> Story (Feature), Task (Chore), Bug (Defect), Epic (Big Container), Sub-task (Breakdown).</li>
+                        <li><strong>Workflow:</strong> To Do → In Progress → In Review → Done.</li>
+                        <li><strong>Hygiene:</strong> Move tickets to "Blocked" if stuck, don't leave them in "In Progress" indefinitely. It pollutes the sprint board.</li>
+                        <li><strong>Labels:</strong> Use labels (e.g., <span class="code-tag">backend</span>, <span class="code-tag">ui</span>, <span class="code-tag">database</span>) for easier filtering later.</li>
+                    </ul>
+                    <div class="scenario-box">
+                        <span class="scenario-title">Scenario: Creating a Bug Ticket</span>
+                        <strong>Summary:</strong> [Module] Short description.
+                        <br>• <strong>Description:</strong> Steps to reproduce, Expected vs Actual result.
+                        <br>• <strong>Environment:</strong> Browser version, OS. <strong>Attachment:</strong> Screenshots or exact error logs.
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>🛡️ Input Validation</h3>
+                    <ul>
+                        <li><strong>Bean Validation (JSR 380):</strong> Add <span class="code-tag">spring-boot-starter-validation</span>. Never trust client-side validation alone; backend is the source of truth.</li>
+                        <li><strong>Annotations:</strong> <span class="code-tag">@NotNull</span>, <span class="code-tag">@Size(min=2, max=50)</span>, <span class="code-tag">@Email</span>, <span class="code-tag">@Pattern(regexp="...")</span>.</li>
+                        <li><strong>Controller Logic:</strong> Add <span class="code-tag">@Valid</span> before DTO. Add <span class="code-tag">BindingResult</span> immediately after to catch errors. Return 400 Bad Request if errors exist.</li>
+                        <li><strong>Custom Validators:</strong> Create <span class="code-tag">@Constraint</span> annotations for complex logic (e.g., "Password must contain special char and number").</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📂 File Upload & Download</h3>
+                    <ul>
+                        <li><strong>Config:</strong> <span class="code-tag">spring.servlet.multipart.max-file-size=10MB</span>.</li>
+                        <li><strong>Upload:</strong> <span class="code-tag">@RequestParam("file") MultipartFile file</span>. Use <span class="code-tag">file.transferTo(new File(path))</span> locally.</li>
+                        <li><strong>Cloud Storage:</strong> Never save to local disk in production (loses data on restart/pod scale). Use AWS S3 SDK or MinIO.</li>
+                        <li><strong>Download:</strong> Read as <span class="code-tag">Resource</span>. Set <span class="code-tag">Content-Disposition: attachment</span> header to force browser download.</li>
+                        <li><strong>Security:</strong> Validate file extension (e.g., only .pdf, .png) to prevent uploading malicious scripts (.jsp, .exe) that could execute on the server.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🐳 Docker Basics</h3>
+                    <ul>
+                        <li><strong>Image vs Container:</strong> Image is the blueprint (read-only). Container is the running instance (writable layer on top).</li>
+                        <li><strong>Dockerfile:</strong> Text file with instructions to build an image (e.g., <span class="code-tag">FROM openjdk:21</span>, <span class="code-tag">COPY target/app.jar</span>).</li>
+                        <li><strong>Commands:</strong> <span class="code-tag">docker ps</span> (running), <span class="code-tag">docker logs -f [id]</span> (follow logs), <span class="code-tag">docker build -t myapp .</span>.</li>
+                        <li><strong>Compose:</strong> <span class="code-tag">docker-compose up -d</span> to run multi-container apps (App + MySQL) in the background.</li>
+                        <li><strong>Volumes:</strong> <span class="code-tag">-v mydata:/var/lib/mysql</span> to persist DB data outside the container lifecycle.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>💼 Interviews & Onboarding</h3>
+                    <div class="scenario-box">
+                        <span class="scenario-title">1. The "STAR" Method</span>
+                        <strong>S</strong>ituation (Context), <strong>T</strong>ask (Your goal), <strong>A</strong>ction (What *you* specifically did), <strong>R</strong>esult (Metrics: "Reduced load time by 30%").
+                    </div>
+                    <div class="scenario-box">
+                        <span class="scenario-title">2. First Week Checklist</span>
+                        Get laptop/access. Setup IDE/JDK/Maven. Clone repo, run <span class="code-tag">mvn clean install</span>. Read Wiki. Fix a tiny typo in a file to test the PR pipeline.
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>⚡ Corporate Acronyms</h3>
+                    <ul class="acronym-list">
+                        <li><span class="acronym-abbr">OOO</span> <span class="acronym-full">Out Of Office</span></li>
+                        <li><span class="acronym-abbr">PTO</span> <span class="acronym-full">Paid Time Off</span></li>
+                        <li><span class="acronym-abbr">ASAP</span> <span class="acronym-full">As Soon As Possible</span></li>
+                        <li><span class="acronym-abbr">FYI</span> <span class="acronym-full">For Your Information</span></li>
+                        <li><span class="acronym-abbr">ETA</span> <span class="acronym-full">Estimated Time of Arrival</span></li>
+                        <li><span class="acronym-abbr">EOD</span> <span class="acronym-full">End Of Day</span></li>
+                        <li><span class="acronym-abbr">WIP</span> <span class="acronym-full">Work In Progress</span></li>
+                        <li><span class="acronym-abbr">LGTM</span> <span class="acronym-full">Looks Good To Me</span></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🆘 Office Survival Guide</h3>
+                    <div class="scenario-box">
+                        <span class="scenario-title">1. The 15-Minute Rule</span>
+                        Try Googling/StackOverflow for 15 mins. <strong>Ask smartly:</strong> "I tried X and Y, getting error Z. Can you help?" Don't just say "It doesn't work".
+                    </div>
+                    <div class="scenario-box">
+                        <span class="scenario-title">2. "Rude" Code Reviews</span>
+                        "This is bad code" usually means "This logic is too complex for me to understand quickly." Ask: "Can you explain what approach would be cleaner here?"
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>🌿 Git Workflow</h3>
+                    <ul>
+                        <li><strong>Branching:</strong> Never commit to <span class="code-tag">main</span>. Create feature branches: <span class="code-tag">feature/ticket-123-login</span>.</li>
+                        <li><strong>Commit Msg:</strong> "Fix login null pointer on user submit" (Good). "Fix bug" (Bad).</li>
+                        <li><strong>Commands:</strong> <span class="code-tag">git stash</span> (temp save), <span class="code-tag">git fetch --all</span> (sync remote without merging).</li>
+                        <li><strong>Merge vs Rebase:</strong> Rebase keeps history linear (clean), but rewrites history. Use Rebase on local feature branches, Merge on long-lived branches like develop.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🐛 Debugging Mastery</h3>
+                    <ul>
+                        <li><strong>Breakpoints:</strong> Conditional (<span class="code-tag">id == 500</span>—stops only for that user). Logpoint (prints to console without stopping execution).</li>
+                        <li><strong>Remote Debugging:</strong> Connect IDE to server (port 5005). Add <span class="code-tag">-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</span> to JVM args.</li>
+                        <li><strong>Evaluate Expression:</strong> Run custom Java code (e.g., <span class="code-tag">user.getName().length()</span>) while paused to test theories without changing code.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📖 API Documentation</h3>
+                    <ul>
+                        <li><strong>SpringDoc:</strong> <span class="code-tag">springdoc-openapi-starter-webmvc-ui</span>. Auto-generates spec from code.</li>
+                        <li><strong>Annotations:</strong> <span class="code-tag">@Operation(summary = "Get user")</span>, <span class="code-tag">@Parameter</span>, <span class="code-tag">@ApiResponse(responseCode = "404")</span>.</li>
+                        <li><strong>Why it matters:</strong> Frontend team relies entirely on this. If your Swagger is wrong or missing, you block them. Keep it updated.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📝 Logging 101</h3>
+                    <ul>
+                        <li><strong>NEVER System.out.println:</strong> It's synchronous, blocks the thread, has no timestamp/level, and can't be filtered in production. Use SLF4J.</li>
+                        <li><strong>Placeholders:</strong> <span class="code-tag">logger.info("User {} logged in", userId)</span>. The <span class="code-tag">{}</span> is a placeholder. If level is DEBUG, it skips string concatenation, saving CPU.</li>
+                        <li><strong>MDC:</strong> <span class="code-tag">MDC.put("traceId", uuid)</span> in a Servlet Filter. Every log line in that request will automatically include the traceId, making debugging across microservices possible.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🔄 Scrum Basics</h3>
+                    <ul>
+                        <li><strong>Sprint:</strong> Fixed timebox (usually 2 weeks). Scope is locked once it starts.</li>
+                        <li><strong>Daily Standup:</strong> 15 mins max. 3 questions: What did I do? What will I do? Blockers? Not a status report to the manager.</li>
+                        <li><strong>Velocity:</strong> Total story points completed per sprint. Used to predict future capacity. Don't use it to measure individual performance.</li>
+                        <li><strong>DoD:</strong> Definition of Done. Code reviewed, unit tested, deployed to Staging, documented.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🔥 Real-time Scenarios</h3>
+                    <div class="scenario-box"><span class="scenario-title">1. Build Failed Locally</span> <span class="code-tag">git pull</span>. <span class="code-tag">mvn clean install -DskipTests</span>. Check <span class="code-tag">java -version</span> (JDK mismatch is common).</div>
+                    <div class="scenario-box"><span class="scenario-title">2. DB Connection Failed</span> Is Docker running? Check properties URL/Password. Is VPN on?</div>
+                    <div class="scenario-box"><span class="scenario-title">3. Dependency Conflict</span> Run <span class="code-tag">mvn dependency:tree</span>. Use <span class="code-tag">&lt;exclusions&gt;</span> to remove bad transitive dependencies.</div>
+                </div>
+                <div class="card">
+                    <h3>☕ Core Java & Spring</h3>
+                    <ul>
+                        <li><strong>Java 17/21:</strong> <span class="code-tag">record</span> (immutable data carriers), <span class="code-tag">var</span> (type inference), Stream API.</li>
+                        <li><strong>Strings:</strong> Immutable. <span class="code-tag">"hello" + "world"</span> creates a new object. Use <span class="code-tag">StringBuilder</span> inside loops.</li>
+                        <li><strong>Injection:</strong> Constructor Injection is mandatory. Avoid <span class="code-tag">@Autowired</span> on fields (makes class impossible to unit test without reflection).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📧 Email Templates</h3>
+                    <div class="email-wrapper"><div class="email-header"><span class="email-subject">Sick Leave / OOO</span><button class="copy-btn" onclick="copyEmail(this)">COPY</button></div><div class="email-body">Hi Team,
+
+I am feeling unwell today and will be OOO. I will check emails and Slack once I recover.
+
+Thanks,
+[Your Name]</div></div>
+                    <div class="email-wrapper"><div class="email-header"><span class="email-subject">Blocked on Ticket #123</span><button class="copy-btn" onclick="copyEmail(this)">COPY</button></div><div class="email-body">Hi [Senior Name],
+
+I am currently working on Ticket #123 but am blocked because I don't have access to the DB schema.
+
+Could you please grant me access or point me to the docs?
+
+Thanks!</div></div>
+                    <div class="email-wrapper"><div class="email-header"><span class="email-subject">Resignation - [Your Name]</span><button class="copy-btn" onclick="copyEmail(this)">COPY</button></div><div class="email-body">Hi [Manager Name],
+
+Please accept this letter as formal notification that I am resigning from my position as [Job Title]. My last day will be [Date].
+
+I appreciate the opportunities here. I will wrap up my duties during the transition.
+
+Sincerely,
+[Your Name]</div></div>
+                </div>
+                <div class="card">
+                    <h3>✅ Code Submission Checklist</h3>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Code compiles locally without errors (ran mvn clean install successfully)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>All new unit tests pass (green bar, no skipped tests allowed)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Code is formatted correctly (applied IDE formatter: Ctrl+Alt+L / Cmd+Shift+F)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>No System.out.println used (replaced with SLF4J logger statements)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>No hardcoded secrets or URLs (moved to application.properties/env vars)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Self-reviewed Git diff before assigning reviewer (checked for typos/debug code)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Jira ticket status updated to "In Review" with PR link in comments</span></label>
+                </div>
+                <div class="card">
+                    <h3>📦 Dependency Management</h3>
+                    <ul>
+                        <li><strong>Maven vs Gradle:</strong> Maven uses rigid XML (<span class="code-tag">pom.xml</span>). Gradle uses Groovy/Kotlin DSL, is faster, and allows custom logic.</li>
+                        <li><strong>Scopes:</strong> compile (default), provided (needed to compile, but server provides it, e.g., Servlet API), test (JUnit).</li>
+                        <li><strong>Starters:</strong> <span class="code-tag">spring-boot-starter-web</span> bundles Tomcat, Jackson, Spring MVC automatically.</li>
+                        <li><strong>BOM (Bill of Materials):</strong> Import <span class="code-tag">spring-boot-dependencies</span> BOM in <span class="code-tag">&lt;dependencyManagement&gt;</span> to ensure all Spring modules use compatible versions without specifying versions manually.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🗃️ Basic SQL & JPA</h3>
+                    <ul>
+                        <li><strong>Entity:</strong> <span class="code-tag">@Entity</span>, <span class="code-tag">@Id</span>, <span class="code-tag">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>.</li>
+                        <li><strong>Column Mapping:</strong> <span class="code-tag">@Column(name = "user_name", nullable = false, length = 50)</span>.</li>
+                        <li><strong>Joins:</strong> <span class="code-tag">@OneToMany</span>, <span class="code-tag">@ManyToOne</span>. Always use <span class="code-tag">FetchType.LAZY</span> for OneToMany to prevent loading the whole DB into memory.</li>
+                        <li><strong>LazyInitializationException:</strong> Occurs if you access a lazy relation outside of a transaction (e.g., in the view layer). Fix: Fetch the data inside the service layer using <span class="code-tag">JOIN FETCH</span>.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🧪 Unit Testing Basics</h3>
+                    <ul>
+                        <li><strong>Mockito:</strong> <span class="code-tag">@Mock</span> creates a dummy. <span class="code-tag">@InjectMocks</span> injects mocks into the class under test.</li>
+                        <li><strong>Stubbing:</strong> <span class="code-tag">when(repo.findById(1L)).thenReturn(Optional.of(user))</span>.</li>
+                        <li><strong>AAA Pattern:</strong> Arrange (setup data), Act (call method), Assert (check result).</li>
+                        <li><strong>Golden Rule:</strong> Never mock data structures (List, String). Only mock external boundaries (Database, APIs).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📬 Postman & API Testing</h3>
+                    <ul>
+                        <li><strong>Environments:</strong> Save variables like <span class="code-tag">{{base_url}}</span> and <span class="code-tag">{{token}}</span> to switch between Local/Staging/Prod with one click.</li>
+                        <li><strong>Tests Tab:</strong> Write JS to auto-verify: <span class="code-tag">pm.response.to.have.status(200);</span></li>
+                        <li><strong>Collection Runner:</strong> Run a sequence of API calls (e.g., Create User -> Get Token -> Fetch Profile) automatically to test flows.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- MID-LEVEL CONTENT -->
+        <div id="mid" class="level-section">
+            <div class="section-header">
+                <h2>Mid-Level (2 - 5 Years)</h2>
+                <span class="focus-tag">Focus: Growth, Politics & Architecture</span>
+            </div>
+            <div class="grid-container">
+                <div class="card">
+                    <h3>🏗️ System Design Interviews</h3>
+                    <ul>
+                        <li><strong>Goal:</strong> Prove you can think holistically about scale, not just syntax.</li>
+                        <li><strong>Framework (4 Steps):</strong>
+                            <br>1. <strong>Requirements:</strong> Ask about scale (1k vs 10M users?), read-heavy vs write-heavy?
+                            <br>2. <strong>High-Level:</strong> Draw boxes (Client -> API GW -> Service -> DB).
+                            <br>3. <strong>Deep Dive:</strong> Pick one box. Talk about DB schemas, Indexing, Caching.
+                            <br>4. <strong>Bottlenecks:</strong> What fails at scale? (Introduce Kafka, Load Balancing).
+                        </li>
+                    </ul>
+                    <div class="scenario-box"><span class="scenario-title">Scenario: "Design a Chat App"</span> Don't jump to WebSockets immediately. Ask: "Is it 1-to-1 or group? How long is history stored? Do we need end-to-end encryption?" Requirements dictate architecture.</div>
+                </div>
+                <div class="card">
+                    <h3>🎭 Managing Expectations</h3>
+                    <ul>
+                        <li><strong>Under-promise, Over-deliver:</strong> If a task takes 1 day, say 2 days. Deliver in 1 day = Hero. Say 1 day, hit a bug, deliver in 2 = Unreliable.</li>
+                        <li><strong>Never say "Easy":</strong> "That's an easy change" lowers its perceived value and makes you look arrogant if it takes time.</li>
+                        <li><strong>Tracking Visibility:</strong> If blocked, update Jira immediately. Managers judge team health by Jira board status, not by walking around.</li>
+                    </ul>
+                    <div class="scenario-box">
+                        <span class="scenario-title">Scenario: PM asks for ETA on complex bug</span>
+                        <strong>Bad:</strong> "I don't know, it's really hard."
+                        <br><strong>Good:</strong> "I need 2 hours to investigate the root cause. I will give you an accurate ETA by 2 PM."
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>🧯 Dealing with Burnout</h3>
+                    <ul>
+                        <li><strong>Signs:</strong> Dreading Monday, cynicism, getting sick often, brain fog while coding.</li>
+                        <li><strong>Prevention:</strong> Strictly log off at EOD. Don't check Slack on weekends. Take actual lunch breaks (away from desk).</li>
+                        <li><strong>Action:</strong> Talk to manager. "I am feeling overwhelmed with context switching. Can we drop X or Y from this sprint?"</li>
+                    </ul>
+                    <div class="scenario-box danger">
+                        <span class="scenario-title">The "Hustle Culture" Trap</span>
+                        Working 12-hour days for months doesn't make you a star; it makes you a liability (high burnout risk, buggy code from fatigue). Consistency beats intensity.
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>🤝 Self-Introduction & Personal Brand</h3>
+                    <div class="scenario-box">
+                        <span class="scenario-title">Scenario: Cross-Team Meeting</span>
+                        "Hi, I'm [Name]. I've been owning the Payment domain for two years. I focus heavily on transaction reliability and ensuring our Stripe integration is rock-solid. Looking forward to aligning on the new checkout flow today."
+                    </div>
+                    <ul>
+                        <li><strong>Key Shift:</strong> Move from "I am learning" to "I own X" and "I specialize in Y".</li>
+                        <li><strong>Networking:</strong> Build relationships with Seniors in *other* teams. This helps later when you need cross-team favors or want to switch teams.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📄 Pagination & Sorting</h3>
+                    <ul>
+                        <li><strong>Spring Data:</strong> Pass <span class="code-tag">Pageable pageable</span> to method. Create via <span class="code-tag">PageRequest.of(page, size, sort)</span>. Note: Page 0 is the first page.</li>
+                        <li><strong>Why:</strong> Don't load 1M records into RAM (OutOfMemoryError). Load 20 at a time.</li>
+                        <li><strong>Keyset Pagination:</strong> For massive datasets, use <span class="code-tag">WHERE id > last_id LIMIT 20</span> instead of <span class="code-tag">OFFSET</span>. Offset requires the DB to scan and discard rows, getting exponentially slower on page 1000+.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>💾 Database Transactions</h3>
+                    <ul>
+                        <li><strong>@Transactional:</strong> Default Propagation: <span class="code-tag">REQUIRED</span> (Join existing tx or create new). Rollback happens automatically for <span class="code-tag">RuntimeException</span>, but NOT for checked exceptions (unless you specify <span class="code-tag">rollbackFor = Exception.class</span>).</li>
+                        <li><strong>Isolation:</strong> READ_COMMITTED (default, prevents dirty reads) vs SERIALIZABLE (prevents phantom reads, but locks tables, killing performance).</li>
+                        <li><strong>Locking:</strong> <span class="code-tag">@Lock(LockModeType.PESSIMISTIC_WRITE)</span> on repository method forces DB to lock the row until tx ends.</li>
+                        <li><strong>Pitfall:</strong> Never call a <span class="code-tag">@Transactional</span> method from within the *same class*. Spring uses AOP proxies; internal calls bypass the proxy, so the transaction won't actually open.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🧶 JSON & Jackson</h3>
+                    <ul>
+                        <li><strong>Annotations:</strong> <span class="code-tag">@JsonProperty("user_id")</span>, <span class="code-tag">@JsonIgnore</span> (hide passwords), <span class="code-tag">@JsonInclude(NON_NULL)</span> (cleaner JSON response).</li>
+                        <li><strong>Custom Serializer:</strong> Implement <span class="code-tag">StdSerializer&lt;T&gt;</span> for complex logic (e.g., encrypting a field before sending).</li>
+                        <li><strong>@JsonView:</strong> Used to return different fields for the same DTO based on the endpoint (e.g., Public view hides internal ID, Admin view shows it).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>✨ Clean Code Principles</h3>
+                    <ul>
+                        <li><strong>Boy Scout Rule:</strong> Leave the code cleaner than you found it.</li>
+                        <li><strong>DRY:</strong> Don't Repeat Yourself. Extract common logic to private methods.</li>
+                        <li><strong>YAGNI:</strong> You Aren't Gonna Need It. Don't build abstractions for future features that haven't been requested yet. Premature optimization is the root of all evil.</li>
+                        <li><strong>Law of Demeter:</strong> <span class="code-tag">user.getAddress().getCity().getName()</span> is bad (tight coupling). <span class="code-tag">user.getCityName()</span> is good.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📈 Appraisals & Growth</h3>
+                    <div class="scenario-box">
+                        <span class="scenario-title">Self-Appraisal</span>
+                        Don't list tasks. List impact: "Implemented OAuth2, reducing security vulnerabilities by 40%." Metrics speak louder than verbs.
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>⚡ Corporate Acronyms</h3>
+                    <ul class="acronym-list">
+                        <li><span class="acronym-abbr">KPI</span> <span class="acronym-full">Key Performance Indicator</span></li>
+                        <li><span class="acronym-abbr">SLA</span> <span class="acronym-full">Service Level Agreement</span></li>
+                        <li><span class="acronym-abbr">Retro</span> <span class="acronym-full">Retrospective Meeting</span></li>
+                        <li><span class="acronym-abbr">SOW</span> <span class="acronym-full">Statement Of Work</span></li>
+                        <li><span class="acronym-abbr">CI/CD</span> <span class="acronym-full">Continuous Integration / Delivery</span></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🔒 Security Essentials</h3>
+                    <ul>
+                        <li><strong>OWASP Top 10:</strong> Injection, Broken Auth, XSS.</li>
+                        <li><strong>Passwords:</strong> Use BCrypt (automatically handles salting). Never MD5 or SHA-1.</li>
+                        <li><strong>JWT:</strong> Stateless auth. Short expiration (15 mins) + Long-lived Refresh Token (7 days). Store in HttpOnly cookie, NOT LocalStorage (prevents XSS theft).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>⚠️ Exception Handling</h3>
+                    <ul>
+                        <li><strong>Global Handler:</strong> Use <span class="code-tag">@ControllerAdvice</span> + <span class="code-tag">@ExceptionHandler</span> to catch exceptions globally instead of try-catch in every controller.</li>
+                        <li><strong>Never Swallow:</strong> Don't do <span class="code-tag">catch (Exception e) { }</span>. At least log it.</li>
+                        <li><strong>Error Codes:</strong> Use Enums for error codes (e.g., <span class="code-tag">ERR_USER_NOT_FOUND</span>) instead of hardcoded strings so frontend can switch on them easily.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🗂️ Java Collections</h3>
+                    <ul>
+                        <li><strong>HashMap:</strong> O(1) lookup. You MUST implement <span class="code-tag">equals()</span> & <span class="code-tag">hashCode()</span> correctly. If you use a mutable field (like age) in hashCode, the map will "lose" your object when the field changes.</li>
+                        <li><strong>Concurrency:</strong> <span class="code-tag">ConcurrentHashMap</span> uses lock stripping (locks segments, not the whole map). Avoid <span class="code-tag">Hashtable</span> (locks everything, very slow).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>⚔️ Code Review Dynamics</h3>
+                    <div class="scenario-box"><span class="scenario-title">I disagree with a comment</span> Reply: "I chose approach Y because of performance reason Z (see benchmark link). What do you think?"</div>
+                </div>
+                <div class="card">
+                    <h3>🧪 Testing Strategies</h3>
+                    <ul>
+                        <li><strong>Unit:</strong> Mock external deps (<span class="code-tag">@MockBean</span>). Fast.</li>
+                        <li><strong>Integration:</strong> Real DB (<span class="code-tag">@DataJpaTest</span>). Slower.</li>
+                        <li><strong>Golden Rule:</strong> Don't test private methods. Test the public behavior that uses the private method.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🏛️ Monolith vs. Microservices</h3>
+                    <ul>
+                        <li><strong>Monolith:</strong> Easier start. Shared DB. Simple deployment.</li>
+                        <li><strong>Microservices:</strong> Independent deployment. Own DB. High network complexity.</li>
+                        <li><strong>Modular Monolith:</strong> Strict package boundaries in one JAR (e.g., <span class="code-tag">com.app.order</span> cannot access <span class="code-tag">com.app.inventory</span>). Best of both worlds for mid-size.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🔥 Real-time Scenarios</h3>
+                    <div class="scenario-box"><span class="scenario-title">1. N+1 Problem</span> Loop executes 1000 queries to get roles for 1000 users. Fix: Use <span class="code-tag">@EntityGraph</span> or <span class="code-tag">JOIN FETCH</span> to do it in 1 query.</div>
+                    <div class="scenario-box"><span class="scenario-title">2. Slow SQL</span> Run <span class="code-tag">EXPLAIN ANALYZE</span>. If you see "Sequential Scan", add indexes on WHERE/JOIN columns.</div>
+                </div>
+                <div class="card">
+                    <h3>📧 Email Templates</h3>
+                    <div class="email-wrapper"><div class="email-header"><span class="email-subject">Promotion Request</span><button class="copy-btn" onclick="copyEmail(this)">COPY</button></div><div class="email-body">Hi [Manager Name], I believe I have consistently met expectations for [Current Role]. I'd like to discuss career progression. Best, [Name]</div></div>
+                    <div class="email-wrapper"><div class="email-header"><span class="email-subject">Handover: PTO</span><button class="copy-btn" onclick="copyEmail(this)">COPY</button></div><div class="email-body">Hi Team, I will be on PTO from [Start Date] to [End Date]. I have handed over my active tasks to [Colleague Name]. Thanks!</div></div>
+                </div>
+                <div class="card">
+                    <h3>🌐 REST API Standards</h3>
+                    <ul>
+                        <li><strong>Codes:</strong> 200 OK, 201 Created, 204 No Content, 400 Bad Request, 404 Not Found.</li>
+                        <li><strong>Versioning:</strong> <span class="code-tag">/api/v1/resource</span>.</li>
+                        <li><strong>HATEOAS:</strong> (Hypermedia as the Engine of Application State). Returning links to next actions in the JSON response (e.g., <span class="code-tag">"next": "/api/users?page=2"</span>). Often skipped but technically required for true REST.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🧩 Design Patterns</h3>
+                    <ul>
+                        <li><strong>Strategy:</strong> Swap algorithms at runtime (e.g., <span class="code-tag">DiscountStrategy</span> with <span class="code-tag">ChristmasDiscount</span> implementation).</li>
+                        <li><strong>Builder:</strong> Clean object creation when a class has many required/optional fields.</li>
+                        <li><strong>Template Method:</strong> Define skeleton in base class, let subclasses override steps (e.g., <span class="code-tag">processOrder()</span> steps).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🔍 Database Indexing</h3>
+                    <ul>
+                        <li><strong>When:</strong> Columns frequently used in <span class="code-tag">WHERE</span>, <span class="code-tag">JOIN</span>, <span class="code-tag">ORDER BY</span>.</li>
+                        <li><strong>Downside:</strong> Slows down INSERT/UPDATE because the index must be updated too.</li>
+                        <li><strong>Composite Rule:</strong> <span class="code-tag">INDEX(a, b)</span>. DB can search on (a) or (a, b), but NOT just (b). Left-most prefix rule.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>⚙️ Spring Profiles & Configs</h3>
+                    <ul>
+                        <li><strong>Files:</strong> <span class="code-tag">application-dev.properties</span>.</li>
+                        <li><strong>Activation:</strong> <span class="code-tag">spring.profiles.active=prod</span> via Env Var.</li>
+                        <li><strong>Secrets:</strong> Use Env Vars or HashiCorp Vault. NEVER hardcode passwords in properties files committed to Git.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>⏱️ Scheduled Tasks</h3>
+                    <ul>
+                        <li><strong>Usage:</strong> <span class="code-tag">@Scheduled(cron = "0 0 12 * * ?")</span> (Noon daily).</li>
+                        <li><strong>Drawback:</strong> If app scales to 2 pods, the job runs twice. Fix: Use K8s CronJob, or Quartz + DB lock to ensure only one node executes.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SENIOR CONTENT -->
+        <div id="senior" class="level-section">
+            <div class="section-header">
+                <h2>Senior Level (5 - 8 Years)</h2>
+                <span class="focus-tag">Focus: Leadership, Shielding & Impact</span>
+            </div>
+            <div class="grid-container">
+                <div class="card">
+                    <h3>🔄 Reverse Interviewing</h3>
+                    <ul>
+                        <li><strong>On-Call:</strong> "What is the rotation? Is there a runbook?"</li>
+                        <li><strong>Tech Debt:</strong> "What % of a sprint is allocated to tech debt?" (If 0%, run).</li>
+                        <li><strong>Turnover:</strong> "Why was this position opened?" (Replacement vs New Headcount).</li>
+                    </ul>
+                    <div class="scenario-box"><span class="scenario-title">Red Flags</span> "We work hard and play hard" (Expect overtime). "We are a family" (Guilt-tripping boundaries). No clear engineering manager in interview loop.</div>
+                </div>
+                <div class="card">
+                    <h3>🛡️ Shielding the Team</h3>
+                    <ul>
+                        <li><strong>The "No" Buffer:</strong> When PM demands Friday delivery, you negotiate: "We can do X by Friday, but Y slips to next week. Which priority?"</li>
+                        <li><strong>Context Switching:</strong> Rotate "support monkey" role so one junior isn't derailed all day answering Slack questions.</li>
+                        <li><strong>Falling on Swords:</strong> If a junior breaks prod, *you* take the blame publicly as the code reviewer. Coach them privately. This builds immense psychological safety.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🌫️ Handling Ambiguity</h3>
+                    <ul>
+                        <li><strong>Step 1:</strong> Don't code immediately. Write a 1-page RFC (Request for Comments) or Design Doc.</li>
+                        <li><strong>Step 2:</strong> Get sign-off from Tech Lead, PM, and affected teams.</li>
+                        <li><strong>Step 3:</strong> Break the approved doc into Jira tickets for juniors.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🎯 Self-Introduction & Persona</h3>
+                    <div class="scenario-box"><span class="scenario-title">Scenario: Meeting Vendor</span> "Hi, I'm [Name], a Senior Engineer on the Platform team. I'm responsible for core architecture and HA. I'll be your primary technical POC."</div>
+                    <ul><li><strong>Demeanor:</strong> Calm under pressure. If you panic, the juniors panic. Be the "adult in the room".</li></ul>
+                </div>
+                <div class="card">
+                    <h3>🚦 Rate Limiting</h3>
+                    <ul>
+                        <li><strong>Algorithms:</strong> Token Bucket (allows short bursts up to capacity), Leaky Bucket (smooths out rate strictly).</li>
+                        <li><strong>Implementation:</strong> Use Bucket4j. For distributed apps, store bucket state in Redis so all pods share the same limit.</li>
+                        <li><strong>Headers:</strong> Return <span class="code-tag">X-RateLimit-Remaining</span> so clients know when to back off.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🔄 API Versioning</h3>
+                    <ul>
+                        <li><strong>URI:</strong> <span class="code-tag">/api/v1/users</span> (Easy to understand, cacheable).</li>
+                        <li><strong>Header:</strong> <span class="code-tag">Accept: application/vnd.myapi.v2+json</span> (Clean URL, harder to test in Postman).</li>
+                        <li><strong>Deprecation:</strong> Keep V1 for 6 months. Return <span class="code-tag">Warning: 299 - "Deprecated API"</span> header with sunset date.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📊 Advanced Jira (JQL)</h3>
+                    <ul>
+                        <li><strong>Operators:</strong> <span class="code-tag">=</span>, <span class="code-tag">IN</span>, <span class="code-tag">WAS</span> (for workflow transitions).</li>
+                        <li><strong>Examples:</strong> <span class="code-tag">assignee = currentUser() AND sprint in openSprints()</span></li>
+                        <li><strong>Overdue:</strong> <span class="code-tag">duedate < now() AND status != Done</span></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>⚙️ JVM Internals</h3>
+                    <ul>
+                        <li><strong>Generations:</strong> Young Gen (short-lived objects, minor GC) vs Old Gen (long-lived, major GC/Stop-The-World).</li>
+                        <li><strong>GC Algorithms:</strong> G1GC (default in Java 9+, balanced). ZGC (Java 15+, sub-millisecond pauses, great for >16GB heaps).</li>
+                        <li><strong>Tuning:</strong> Don't guess. Take a heap dump (<span class="code-tag">-XX:+HeapDumpOnOutOfMemoryError</span>) and analyze with Eclipse MAT to find the exact object leaking memory.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>👥 Hiring & PIPs</h3>
+                    <ul><li><strong>Red Flags:</strong> "I did everything" (no teamwork), blames others, no questions for you.</li></ul>
+                    <div class="scenario-box"><span class="scenario-title">PIP</span> Clear & documented goals. 30/60/90 days timeline. HR MUST be involved from day one.</div>
+                </div>
+                <div class="card">
+                    <h3>⚡ Corporate Acronyms</h3>
+                    <ul class="acronym-list">
+                        <li><span class="acronym-abbr">P0 / P1</span> <span class="acronym-full">Priority 0 / Priority 1</span></li>
+                        <li><span class="acronym-abbr">RCA</span> <span class="acronym-full">Root Cause Analysis</span></li>
+                        <li><span class="acronym-abbr">OKR</span> <span class="acronym-full">Objectives and Key Results</span></li>
+                        <li><span class="acronym-abbr">MTTR</span> <span class="acronym-full">Mean Time To Recovery</span></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>⚡ Caching Strategies</h3>
+                    <ul>
+                        <li><strong>Tools:</strong> Redis (Distributed, persistent), Caffeine (Local, ultra-fast, no network overhead).</li>
+                        <li><strong>Cache-Aside:</strong> Check Cache -> Miss -> DB -> Update Cache.</li>
+                        <li><strong>Invalidation:</strong> Time-based (TTL) vs Event-based (Publish update event to clear cache instantly).</li>
+                        <li><strong>Stampede:</strong> Cache expires, 1000 requests hit DB simultaneously. Fix: Use distributed locks or random TTL offset (e.g., TTL + random(0-60)s).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📨 Async Processing</h3>
+                    <ul>
+                        <li><strong>Kafka:</strong> Topics, Partitions (parallelism), Consumer Groups (load balancing).</li>
+                        <li><strong>DLQ:</strong> Dead Letter Queue for messages that failed 3+ times. Don't drop them silently.</li>
+                        <li><strong>Exactly-Once:</strong> Very hard to achieve in distributed systems. Usually settle for "At-least-once" delivery + Idempotency in the consumer.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🚀 CI/CD & Automation</h3>
+                    <ul>
+                        <li><strong>Strategies:</strong> Blue/Green (switch traffic instantly), Canary (route 5% traffic to new version, monitor errors, then 100%).</li>
+                        <li><strong>GitOps:</strong> ArgoCD watches Git repo and auto-applies K8s manifests. Git is the single source of truth.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🚨 Crisis Management</h3>
+                    <div class="scenario-box danger"><span class="scenario-title">Client Angry (P0)</span> 1. Acknowledge. 2. Communicate ETA. 3. Fix/Rollback. 4. Retro (MUST be Blameless—focus on the system, not "Who did it").</div>
+                </div>
+                <div class="card">
+                    <h3>🚀 Performance Tuning</h3>
+                    <ul>
+                        <li><strong>Tools:</strong> JProfiler, Java Flight Recorder (JFR - built into JDK), Gatling (Load Testing).</li>
+                        <li><strong>Metrics:</strong> High CPU (bad algo/loop), High Memory (leak or heap too small), High I/O Wait (DB latency).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🌐 Microservices Patterns</h3>
+                    <ul>
+                        <li><strong>Circuit Breaker:</strong> Resilience4j. States: Closed (normal) -> Open (failing fast, not hitting downstream) -> Half-Open (testing if downstream recovered).</li>
+                        <li><strong>Saga:</strong> Choreography (events fired sequentially) vs Orchestration (central controller tells services what to do).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🔥 Real-time Scenarios</h3>
+                    <div class="scenario-box"><span class="scenario-title">1. Outage</span> Generate Thread Dump (<span class="code-tag">jstack &lt;pid&gt;</span>). Look for "BLOCKED" threads waiting on DB locks.</div>
+                    <div class="scenario-box"><span class="scenario-title">2. Deadlock</span> Thread 1 locks A waits for B. Thread 2 locks B waits for A. Fix: Always acquire locks in the same global order.</div>
+                </div>
+                <div class="card">
+                    <h3>⚙️ Java Concurrency</h3>
+                    <ul>
+                        <li><strong>Executors:</strong> Manage thread pools. Never use <span class="code-tag">new Thread()</span> manually (unbounded thread creation crashes the JVM).</li>
+                        <li><strong>Virtual Threads (Java 21):</strong> <span class="code-tag">Executors.newVirtualThreadPerTaskExecutor()</span>. Great for I/O bound tasks (DB calls, HTTP calls). Do NOT use for CPU-bound tasks (image processing)—you will starve the OS CPU.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📧 Email Templates</h3>
+                    <div class="email-wrapper"><div class="email-header"><span class="email-subject">Post-Mortem: Incident #990</span><button class="copy-btn" onclick="copyEmail(this)">COPY</button></div><div class="email-body">Team, RCA for outage: **Issue:** DB Pool Exhaustion. **Root Cause:** Unindexed query. **Fix:** Index added. **Prevention:** Mandatory DB review for PRs.</div></div>
+                    <div class="email-wrapper"><div class="email-header"><span class="email-subject">Escalation: Blocked by Vendor</span><button class="copy-btn" onclick="copyEmail(this)">COPY</button></div><div class="email-body">Hi [Manager], Despite multiple attempts since [Date], [Vendor] is unresponsive. Can we leverage our account manager to expedite?</div></div>
+                </div>
+                <div class="card">
+                    <h3>✅ Senior Code Review Focus</h3>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Are SOLID principles violated? (e.g., God class doing too much, tight coupling)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Is the code thread-safe? (Look for shared mutable state without proper locking/atomic wrappers)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>No generic catch(Exception) blocks? (Hides actual root cause bugs and makes debugging impossible)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Are DB queries optimized? (Explicitly check for N+1 issues and missing indexes on WHERE clauses)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Is exception handling granular? (Custom exceptions with context, not just throwing RuntimeException)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Are external API calls resilient? (Implemented retries with exponential backoff and timeouts)</span></label>
+                </div>
+                <div class="card">
+                    <h3>🔐 Spring Security Deep Dive</h3>
+                    <ul>
+                        <li><strong>Filter Chain:</strong> <span class="code-tag">SecurityFilterChain</span> bean replaces deprecated adapter.</li>
+                        <li><strong>Method Security:</strong> <span class="code-tag">@PreAuthorize("hasRole('ADMIN')")</span> at service layer.</li>
+                        <li><strong>Session vs JWT:</strong> Session (stateful, easy to revoke, hard to scale). JWT (stateless, highly scalable, hard to revoke immediately before expiry).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🔁 Retries & Resilience</h3>
+                    <ul>
+                        <li><strong>Resilience4j:</strong> <span class="code-tag">@Retry</span>, Exponential Backoff (1s, 2s, 4s).</li>
+                        <li><strong>Idempotency:</strong> If a network blip causes a retry, will it create duplicate database inserts? Use <span class="code-tag">Idempotency-Key</span> header from client to deduplicate.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ARCHITECT CONTENT -->
+        <div id="architect" class="level-section">
+            <div class="section-header">
+                <h2>Lead / Architect (8+ Years)</h2>
+                <span class="focus-tag">Focus: Strategy, Survival & Influence</span>
+            </div>
+            <div class="grid-container">
+                <div class="card">
+                    <h3>📄 Executive Resume & Branding</h3>
+                    <ul>
+                        <li><strong>Drop the Code:</strong> No one cares that you "wrote Spring Boot controllers". They care: "Led migration of legacy monolith, reducing cloud costs by 40%."</li>
+                        <li><strong>Metrics:</strong> Money saved ($), Time reduced (%), Scale (Millions of users).</li>
+                        <li><strong>Personal Brand:</strong> Start a blog. Speak at meetups. Creates "inbound" recruiting (headhunters come to you).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🌪️ Surviving Reorgs & Layoffs</h3>
+                    <ul>
+                        <li><strong>Visibility:</strong> Send monthly summaries to skip-level manager: "Highlights: X. Impact: $A saved."</li>
+                        <li><strong>Be a Connector:</strong> Layoffs spare people who know how *other* systems work. Be the "glue".</li>
+                        <li><strong>Keep Resume Ready:</strong> Update it every 6 months while happy, not when panicked.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🛑 Saying "No" to Leadership</h3>
+                    <ul>
+                        <li><strong>Never flat "No":</strong> Say "Yes, but..." or "No, because...".</li>
+                        <li><strong>Trade-off Frame:</strong> "We can build X by Friday, but DB migration slips, risking an outage. Which priority?"</li>
+                        <li><strong>Data > Opinions:</strong> "Load tests show this collapses at 5k RPS" beats "My experience says it will fail".</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🏢 Self-Introduction & Strategy</h3>
+                    <div class="scenario-box"><span class="scenario-title">Scenario: Executive Steering</span> "Good morning. I'm [Name], leading platform modernization. My role is to ensure tech investments enable go-to-market strategy while managing risk and cloud costs."</div>
+                    <ul><li><strong>Language:</strong> Speak Risk, Cost, and Time-to-Market. Translate tech debt into dollar amounts.</li></ul>
+                </div>
+                <div class="card">
+                    <h3>💾 Data Modeling Strategy</h3>
+                    <ul>
+                        <li><strong>Normalization:</strong> ACID compliant. Reduces redundancy. Good for transactional systems.</li>
+                        <li><strong>Denormalization:</strong> Duplicates data. BASE compliant. Good for Analytics/NoSQL where read speed is critical.</li>
+                        <li><strong>Sharding:</strong> Split large DBs by hash (e.g., User ID % 100) across multiple servers.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🚪 API Gateway Patterns</h3>
+                    <ul>
+                        <li><strong>BFF:</strong> Backend for Frontend (Different gateways for Web vs Mobile).</li>
+                        <li><strong>Composition:</strong> Gateway aggregates responses from multiple microservices.</li>
+                        <li><strong>Sidecar:</strong> Envoy proxy pattern (e.g., Istio service mesh) vs centralized gateway.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📡 Event-Driven Architecture</h3>
+                    <ul>
+                        <li><strong>Decoupling:</strong> Services talk via events, not synchronous HTTP calls.</li>
+                        <li><strong>Outbox Pattern:</strong> Write event to DB "outbox" table in same TX as business data. Separate worker polls outbox and publishes to Kafka. Guarantees atomicity.</li>
+                        <li><strong>Schema Evolution:</strong> Use Avro/Protobuf with Schema Registry. Never break backward compatibility in event formats.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🤝 Negotiation & Vendors</h3>
+                    <div class="scenario-box"><span class="scenario-title">Scope Dispute</span> "That's outside defined SOW. Requires a Change Order (extra cost/timeline)."</div>
+                </div>
+                <div class="card">
+                    <h3>⚡ Corporate Acronyms</h3>
+                    <ul class="acronym-list">
+                        <li><span class="acronym-abbr">ROI</span> <span class="acronym-full">Return On Investment</span></li>
+                        <li><span class="acronym-abbr">CAPEX / OPEX</span> <span class="acronym-full">CAPital / OPerational EXpenditure</span></li>
+                        <li><span class="acronym-abbr">SLI / SLO / SLA</span> <span class="acronym-full">Service Level (Indicator / Objective / Agreement)</span></li>
+                        <li><span class="acronym-abbr">FinOps</span> <span class="acronym-full">Financial Operations</span></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📊 Observability</h3>
+                    <ul>
+                        <li><strong>3 Pillars:</strong> Metrics (Prometheus/Grafana), Logs (Loki/ELK), Traces (Jaeger/Tempo).</li>
+                        <li><strong>Standard:</strong> OpenTelemetry (instrument once, send to any backend).</li>
+                        <li><strong>SLO Math:</strong> 99.9% availability = ~43 minutes of downtime allowed per month. 99.99% = ~4 minutes.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🛡️ High Availability & DR</h3>
+                    <ul>
+                        <li><strong>RPO vs RTO:</strong> RPO (Recovery Point Objective - how much data loss is acceptable?) vs RTO (Recovery Time Objective - how long can you be down?).</li>
+                        <li><strong>Active-Active:</strong> High cost, zero downtime failover. <strong>Active-Passive:</strong> Lower cost, minutes of downtime during DNS switch.</li>
+                        <li><strong>Chaos:</strong> Intentionally break things (Gremlin/Chaos Monkey) to find weak spots before customers do.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>👥 Team Topologies</h3>
+                    <ul>
+                        <li><strong>Stream-Aligned:</strong> End-to-end business flow.</li>
+                        <li><strong>Conway's Law:</strong> Software mirrors communication structure.</li>
+                        <li><strong>Platform Team:</strong> Provide internal "Golden Paths" (CI/CD templates, standard auth) so stream teams can deploy autonomously.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🏢 Stakeholder Management</h3>
+                    <div class="scenario-box"><span class="scenario-title">Marketing wants feature X "Tomorrow"</span> Offer MVP. "We can deliver core value in 2 days, full feature in 2 weeks. Which do you prefer?"</div>
+                </div>
+                <div class="card">
+                    <h3>🛡️ Security & Compliance</h3>
+                    <ul>
+                        <li><strong>Zero Trust:</strong> Verify every request, even internal ones. Never trust internal network IPs.</li>
+                    </ul>
+                    <div class="scenario-box danger"><span class="scenario-title">Data Breach</span> 1. Contain (Revoke keys). 2. Investigate. 3. Report to Legal (Strict 72h GDPR rule for Europe).</div>
+                </div>
+                <div class="card">
+                    <h3>⚖️ Waterfall vs. Agile</h3>
+                    <div class="scenario-box"><span class="scenario-title">Fixed Price</span> "We can do fixed price, but scope MUST be locked. Any changes require a formal Change Order (extra cost)."</div>
+                </div>
+                <div class="card">
+                    <h3>🔥 Real-time Scenarios</h3>
+                    <div class="scenario-box"><span class="scenario-title">1. Legacy Migration</span> Strangler Fig Pattern. Route new features to new services. Gradually turn off legacy endpoints.</div>
+                    <div class="scenario-box"><span class="scenario-title">2. Vendor Lock-in</span> Use Terraform instead of AWS CloudFormation. Avoid proprietary APIs (use standard S3 API, not AWS-specific extensions).</div>
+                </div>
+                <div class="card">
+                    <h3>☁️ Cloud & Strategy</h3>
+                    <ul>
+                        <li><strong>IaC:</strong> Terraform/Pulumi. Never click through Console to create resources (untrackable, unrepeatable).</li>
+                        <li><strong>FinOps:</strong> Use Spot instances for stateless workers. Auto-scale to zero at night.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📧 Executive Emails</h3>
+                    <div class="email-wrapper"><div class="email-header"><span class="email-subject">Proposal: Tech Stack Upgrade</span><button class="copy-btn" onclick="copyEmail(this)">COPY</button></div><div class="email-body">Hi Stakeholders, **Proposal:** Upgrade Java 8 to 21. **ROI:** Performance (Virtual Threads), Security (EOL). **Effort:** 4 Sprints. Seeking approval.</div></div>
+                    <div class="email-wrapper"><div class="email-header"><span class="email-subject">Re: Feature X Request</span><button class="copy-btn" onclick="copyEmail(this)">COPY</button></div><div class="email-body">Hi [Name], After reviewing our roadmap, we cannot commit to this in Q2. It conflicts with [Priority]. We can revisit in Q3.</div></div>
+                </div>
+                <div class="card">
+                    <h3>🏗️ System Design Concepts</h3>
+                    <ul>
+                        <li><strong>CAP Theorem:</strong> During a network partition, choose Consistency (return error to user) or Availability (return stale data). You cannot have both.</li>
+                        <li><strong>PACELC:</strong> Extension of CAP for normal operations (Latency vs Consistency).</li>
+                        <li><strong>CQRS:</strong> Separate read/write models. Writes go to Postgres. Reads go to Elasticsearch.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🤝 Leadership Focus</h3>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Mentor 2 Junior developers (track their progress in weekly 1:1 meetings)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Reduce Tech Debt by 10% (measured via SonarQube reliability/maintainability metrics)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Conduct hiring interviews (create standardized rubrics to eliminate bias)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Document ADRs for 3 major technical decisions (record Context, Decision, Consequences)</span></label>
+                    <label class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>Present one tech talk or knowledge sharing session to the wider department</span></label>
+                    <div class="scenario-box"><span class="scenario-title">1:1 Framework</span> 10m: How are you? (Personal connection). 15m: Blockers & Wins. 5m: Career growth / Feedback.</div>
+                </div>
+                <div class="card">
+                    <h3>🏛️ Domain-Driven Design (DDD)</h3>
+                    <ul>
+                        <li><strong>Ubiquitous Language:</strong> If business says "Cargo", code must say "Cargo" not "Item".</li>
+                        <li><strong>Bounded Context:</strong> "Shipping" context has different meaning for "Package" than "Software" context.</li>
+                        <li><strong>Domain Events:</strong> "OrderPlaced", "PaymentFailed". Trigger side effects without tight coupling.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>💰 Cost Optimization (FinOps)</h3>
+                    <ul>
+                        <li><strong>Right-sizing:</strong> Downgrade instances that sit at 10% CPU.</li>
+                        <li><strong>Spot Instances:</strong> 90% cheaper for stateless workers. They can be terminated anytime by AWS, so your app must be resilient to pod death.</li>
+                        <li><strong>Storage:</strong> Move old logs from S3 Standard to S3 Glacier (much cheaper, takes hours to retrieve).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📊 Vendor Evaluation Matrix</h3>
+                    <ul>
+                        <li><strong>Rule of Thumb:</strong> Build core business logic. Buy commodity tech (e.g., Auth0 for auth, Sentry for error logging).</li>
+                        <li><strong>Lock-in Risk:</strong> Can we export our data easily? Does it use open standards?</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📝 Architecture Decision Records</h3>
+                    <ul>
+                        <li><strong>Context:</strong> What is the technical issue we are facing?</li>
+                        <li><strong>Decision:</strong> What are we going to do?</li>
+                        <li><strong>Consequences:</strong> What are the positive and negative impacts?</li>
+                    </ul>
+                    <div class="scenario-box"><span class="scenario-title">Why ADRs?</span> When someone asks 2 years later "Why on earth did we use Cassandra here?", you have a dated, signed document explaining the exact context.</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Java & Spring Boot Corporate Guide.</p>
+    </footer>
+
+    <div id="toast" class="toast">Email copied to clipboard!</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const contentSections = document.querySelectorAll('.level-section');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    const targetId = this.getAttribute('data-target');
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) { targetSection.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+                });
+            });
+        });
+        function copyEmail(button) {
+            const emailWrapper = button.closest('.email-wrapper');
+            if(!emailWrapper) return;
+            const emailBody = emailWrapper.querySelector('.email-body');
+            if(!emailBody) return;
+            const text = emailBody.innerText;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => showToast()).catch(err => alert("Copy failed."));
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = text; document.body.appendChild(textArea); textArea.select();
+                try { document.execCommand('copy'); showToast(); } catch (err) {}
+                document.body.removeChild(textArea);
+            }
+        }
+        function showToast() {
+            const toast = document.getElementById('toast');
+            if (toast) { toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
+        }
+    </script>
+</body>
+</html>
